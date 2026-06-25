@@ -18,18 +18,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Accept SDK licenses & install required SDK
+      - name: Accept SDK license
         run: |
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.5'
-
-      - name: Build APK
+      - name: Build with Gradle
         run: |
+          # Download and install Gradle directly
+          wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip
+          unzip -q gradle-8.5-bin.zip
+          export PATH="$PWD/gradle-8.5/bin:$PATH"
           gradle assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
