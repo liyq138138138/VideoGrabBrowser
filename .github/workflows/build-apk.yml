@@ -28,8 +28,8 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Build APK
-        run: gradle assembleDebug --no-daemon --stacktrace
+      - name: Build APK (with full compiler output)
+        run: gradle assembleDebug --no-daemon --info 2>&1 | head -200
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
