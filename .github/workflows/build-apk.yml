@@ -2,16 +2,15 @@ name: Build APK
 
 on:
   push:
-    branches: [ main, master, main ]
-  workflow_dispatch:  # Allow manual trigger
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -19,17 +18,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Build Debug APK
+      - name: Install Gradle
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip
+          unzip -q gradle-8.5-bin.zip
+          echo "$PWD/gradle-8.5/bin" >> $GITHUB_PATH
 
-      - name: Upload APK
+      - name: Accept Android SDK license
+        run: |
+          mkdir -p $ANDROID_SDK_ROOT/licenses
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "8933bad161af4178b1185d1a37fbf41ea5269c55" >> $ANDROID_SDK_ROOT/licenses/android-sdk-license
+
+      - name: Build
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: VideoGrabBrowser-Debug
           path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
