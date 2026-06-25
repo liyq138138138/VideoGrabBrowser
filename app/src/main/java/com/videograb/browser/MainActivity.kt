@@ -124,6 +124,14 @@ class MainActivity : AppCompatActivity() {
             loadUrl(urlBar.text.toString())
         }
 
+        findViewById<View>(R.id.btnBookmark).setOnClickListener {
+            toggleBookmark()
+        }
+        findViewById<View>(R.id.btnBookmark).setOnLongClickListener {
+            showBookmarksDialog()
+            true
+        }
+
         findViewById<View>(R.id.btnBack).setOnClickListener {
             if (webView.canGoBack()) webView.goBack()
         }
@@ -464,11 +472,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateBookmarkIcon() {
         try {
-            val btnBookmark = findViewById<android.widget.ImageButton>(R.id.btnBookmark)
+            val bmBtn = findViewById<android.widget.ImageButton>(R.id.btnBookmark)
             if (currentUrl.isNotBlank() && bookmarkManager.isBookmarked(currentUrl)) {
-                btnBookmark.setImageResource(R.drawable.ic_bookmark_filled)
+                bmBtn.setImageResource(R.drawable.ic_bookmark_filled)
             } else {
-                btnBookmark.setImageResource(R.drawable.ic_bookmark)
+                bmBtn.setImageResource(R.drawable.ic_bookmark)
             }
         } catch (_: Exception) { }
     }
@@ -503,7 +511,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun setupDownloadList() { {
+    private fun setupDownloadList() {
         downloadsAdapter = DownloadAdapter(
             onCancel = { task -> downloadManager.cancelTask(task.id) },
             onOpen = { task -> openDownloadedFile(task.outputPath) }
