@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Android 16 / OriginOS 6 optimized theme
+        - No action bar (handled by custom toolbar)
+        - Edge-to-edge enabled
+        - Translucent status bar for smooth animations
+        - Force dark support for WebView
+    -->
+    <style name="Theme.VideoGrabBrowser" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSurface">@color/card_background</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <!-- Predictive back animation (Android 14+) -->
+        <item name="android:enableOnBackInvokedCallback">true</item>
+        <!-- Smooth transitions -->
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
+        <!-- Ensure proper dark mode handling -->
+        <item name="android:forceDarkAllowed">true</item>
+    </style>
+</resources>
