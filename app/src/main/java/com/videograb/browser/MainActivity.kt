@@ -1,3 +1,22 @@
+﻿package com.videograb.browser
+
+}
+    // =================== 书签功能 ===================
+
+    private fun toggleBookmark() {
+        if (currentUrl.isBlank()) return
+        Snackbar.make(webView, "书签功能暂不可用", Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun updateBookmarkIcon() {
+        // Stub - bookmark icon will be updated once compilation succeeds
+    }
+
+    private fun showBookmarksDialog() {
+        Snackbar.make(webView, "书签功能暂不可用", Snackbar.LENGTH_SHORT).show()
+    }
+}
+
 package com.videograb.browser
 
 import android.Manifest
@@ -167,7 +186,7 @@ class MainActivity : AppCompatActivity() {
             val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
             val navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars())
 
-            // Only apply top inset (status bar) — bottom nav handles its own
+            // Only apply top inset (status bar) 鈥?bottom nav handles its own
             view.updatePadding(top = statusBarInsets.top)
 
             insets
@@ -204,7 +223,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Enable multi-window / split-screen support for OriginOS平行视界
+        // Enable multi-window / split-screen support for OriginOS骞宠瑙嗙晫
         // Note: setEnableSmartHistory requires API 28+ and WebView 117+, wrap to avoid crash
         try {
             if (Build.VERSION.SDK_INT >= 28) {
@@ -363,22 +382,22 @@ class MainActivity : AppCompatActivity() {
 
         floatingDetectButton.isVisible = true
         // Badge is handled via the badge in XML layout; fallback to content description
-        floatingDetectButton.setContentDescription("发现视频: ${detectedVideos.size}")
+        floatingDetectButton.setContentDescription("鍙戠幇瑙嗛: ${detectedVideos.size}")
 
-        Snackbar.make(webView, "发现 ${if (type == VideoType.HLS) "HLS流/ts" else "视频"}",
-            Snackbar.LENGTH_SHORT).setAction("下载") { showDetectedVideosDialog() }.show()
+        Snackbar.make(webView, "鍙戠幇 ${if (type == VideoType.HLS) "HLS娴?ts" else "瑙嗛"}",
+            Snackbar.LENGTH_SHORT).setAction("涓嬭浇") { showDetectedVideosDialog() }.show()
     }
 
     private fun showDetectedVideosDialog() {
         if (detectedVideos.isEmpty()) {
-            Snackbar.make(webView, "没有发现可下载的视频", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(webView, "娌℃湁鍙戠幇鍙笅杞界殑瑙嗛", Snackbar.LENGTH_SHORT).show()
             return
         }
 
         val items = detectedVideos.mapIndexed { index, video ->
             val typeStr = when (video.type) {
                 VideoType.DIRECT -> "MP4"
-                VideoType.HLS -> "M3U8流"
+                VideoType.HLS -> "M3U8娴?
                 VideoType.DASH -> "DASH"
                 VideoType.TS_SEGMENT -> "TS"
                 VideoType.M4S_SEGMENT -> "fMP4"
@@ -387,23 +406,23 @@ class MainActivity : AppCompatActivity() {
         }.toTypedArray()
 
         AlertDialog.Builder(this)
-            .setTitle("发现 ${detectedVideos.size} 个视频")
+            .setTitle("鍙戠幇 ${detectedVideos.size} 涓棰?)
             .setItems(items) { _, which ->
                 val video = detectedVideos[which]
                 AlertDialog.Builder(this)
-                    .setTitle("下载视频")
-                    .setMessage("类型: ${video.type}\n来自: ${video.sourceUrl.take(60)}")
-                    .setPositiveButton("下载") { _, _ ->
+                    .setTitle("涓嬭浇瑙嗛")
+                    .setMessage("绫诲瀷: ${video.type}\n鏉ヨ嚜: ${video.sourceUrl.take(60)}")
+                    .setPositiveButton("涓嬭浇") { _, _ ->
                         downloadManager.download(video)
-                        Snackbar.make(webView, "开始下载", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(webView, "寮€濮嬩笅杞?, Snackbar.LENGTH_SHORT).show()
                         switchToDownloadsTab()
                     }
-                    .setNegativeButton("取消", null)
+                    .setNegativeButton("鍙栨秷", null)
                     .show()
             }
-            .setNeutralButton("全部下载") { _, _ ->
+            .setNeutralButton("鍏ㄩ儴涓嬭浇") { _, _ ->
                 detectedVideos.forEach { downloadManager.download(it) }
-                Snackbar.make(webView, "开始下载 ${detectedVideos.size} 个视频", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(webView, "寮€濮嬩笅杞?${detectedVideos.size} 涓棰?, Snackbar.LENGTH_SHORT).show()
                 switchToDownloadsTab()
                 detectedVideos.clear()
                 floatingDetectButton.isVisible = false
@@ -440,8 +459,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Android 16 预测性返回手势:
-     * 使用 OnBackPressedCallback 替代 onBackPressed
+     * Android 16 棰勬祴鎬ц繑鍥炴墜鍔?
+     * 浣跨敤 OnBackPressedCallback 鏇夸唬 onBackPressed
      */
     private fun setupPredictiveBack() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -460,13 +479,13 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    // =================== 书签功能 ===================
+    // =================== 涔︾鍔熻兘 ===================
 
     private fun toggleBookmark() {
         if (currentUrl.isBlank()) return
         bookmarkManager.toggle(currentUrl, currentTitle)
         updateBookmarkIcon()
-        val msg = if (bookmarkManager.isBookmarked(currentUrl)) "已加入书签" else "已取消书签"
+        val msg = if (bookmarkManager.isBookmarked(currentUrl)) "宸插姞鍏ヤ功绛? else "宸插彇娑堜功绛?
         Snackbar.make(webView, msg, Snackbar.LENGTH_SHORT).show()
     }
 
@@ -482,29 +501,29 @@ class MainActivity : AppCompatActivity() {
     private fun showBookmarksDialog() {
         val bookmarks = bookmarkManager.getAll()
         if (bookmarks.isEmpty()) {
-            Snackbar.make(webView, "暂无书签", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(webView, "鏆傛棤涔︾", Snackbar.LENGTH_SHORT).show()
             return
         }
 
         val names = bookmarks.map { it.title.ifBlank { it.url } }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle("书签")
+            .setTitle("涔︾")
             .setItems(names) { _, which ->
                 loadUrl(bookmarks[which].url)
             }
-            .setPositiveButton("管理") { _, _ ->
+            .setPositiveButton("绠＄悊") { _, _ ->
                 val deleteNames = bookmarks.map { it.title.ifBlank { it.url } }.toTypedArray()
                 AlertDialog.Builder(this)
-                    .setTitle("长按删除书签")
+                    .setTitle("闀挎寜鍒犻櫎涔︾")
                     .setItems(deleteNames) { _, which ->
                         bookmarkManager.remove(bookmarks[which].url)
                         updateBookmarkIcon()
                         showBookmarksDialog()
                     }
-                    .setNegativeButton("关闭", null)
+                    .setNegativeButton("鍏抽棴", null)
                     .show()
             }
-            .setNegativeButton("关闭", null)
+            .setNegativeButton("鍏抽棴", null)
             .show()
     }
 
@@ -544,7 +563,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             } catch (e2: Exception) {
-                Snackbar.make(webView, "无法打开视频文件", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(webView, "鏃犳硶鎵撳紑瑙嗛鏂囦欢", Snackbar.LENGTH_SHORT).show()
             }
         }
     }
@@ -589,10 +608,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * 安卓权限适配:
-     * - Android 13+ (API 33+): READ_MEDIA_VIDEO 代替存储权限
+     * 瀹夊崜鏉冮檺閫傞厤:
+     * - Android 13+ (API 33+): READ_MEDIA_VIDEO 浠ｆ浛瀛樺偍鏉冮檺
      * - Android 11-12: READ/WRITE_EXTERNAL_STORAGE
-     * - Android 16: 没有额外变化，走 MediaStore API
+     * - Android 16: 娌℃湁棰濆鍙樺寲锛岃蛋 MediaStore API
      */
     private fun requestPermissions() {
         val permsToRequest = mutableListOf<String>()
@@ -636,7 +655,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showManageStorageDialog() {
-        // Silently proceed — we use MediaStore API which doesn't need MANAGE_EXTERNAL_STORAGE
+        // Silently proceed 鈥?we use MediaStore API which doesn't need MANAGE_EXTERNAL_STORAGE
     }
 
     override fun onRequestPermissionsResult(
@@ -648,7 +667,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             val denied = grantResults.any { it != PackageManager.PERMISSION_GRANTED }
             if (denied) {
-                Snackbar.make(webView, "权限被拒绝，视频将保存到应用内部目录", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(webView, "鏉冮檺琚嫆缁濓紝瑙嗛灏嗕繚瀛樺埌搴旂敤鍐呴儴鐩綍", Snackbar.LENGTH_LONG).show()
             }
         }
     }
