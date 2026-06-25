@@ -2,36 +2,34 @@ package com.videograb.browser
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class BookmarkManager(context: Context) {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences("bookmarks", Context.MODE_PRIVATE)
-    private val gson = Gson()
+    private val prefs: SharedPreferences = context.getSharedPreferences("bookmarks_v2", Context.MODE_PRIVATE)
 
     fun getAll(): List<Bookmark> {
-        val json = prefs.getString("bookmarks_list", "[]") ?: "[]"
-        val type = object : TypeToken<List<Bookmark>>() {}.type
-        return try {
-            gson.fromJson(json, type) ?: emptyList()
-        } catch (_: Exception) {
-            emptyList()
+        val count = prefs.getInt("count", 0)
+        val list = mutableListOf<Bookmark>()
+        for (i in 0 until count) {
+            val url = prefs.getString("url_$i", null) ?: continue
+            val title = prefs.getString("title_$i", "") ?: ""
+            val id = prefs.getLong("id_$i", 0L)
+            list.add(Bookmark(id = id, title = title, url = url))
         }
+        return list
     }
 
     fun add(bookmark: Bookmark) {
         val list = getAll().toMutableList()
-        // Avoid duplicates
         if (list.any { it.url == bookmark.url }) return
         list.add(0, bookmark)
-        save(list)
+        saveAll(list)
     }
 
     fun remove(url: String) {
         val list = getAll().toMutableList()
         list.removeAll { it.url == url }
-        save(list)
+        saveAll(list)
     }
 
     fun isBookmarked(url: String): Boolean {
@@ -46,7 +44,14 @@ class BookmarkManager(context: Context) {
         }
     }
 
-    private fun save(list: List<Bookmark>) {
-        prefs.edit().putString("bookmarks_list", gson.toJson(list)).apply()
+    private fun saveAll(list: List<Bookmark>) {
+        val editor = prefs.edit()
+        editor.putInt("count", list.size)
+        list.forEachIndexed { i, b ->
+            editor.putLong("id_$i", b.id)
+            editor.putString("title_$i", b.title)
+            editor.putString("url_$i", b.url)
+        }
+        editor.apply()
     }
 }
