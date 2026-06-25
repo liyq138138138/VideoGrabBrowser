@@ -74,6 +74,14 @@
                 android:textSize="14sp" />
 
             <ImageButton
+                android:id="@+id/btnBookmark"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_bookmark"
+                android:contentDescription="书签" />
+
+            <ImageButton
                 android:id="@+id/btnGo"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
