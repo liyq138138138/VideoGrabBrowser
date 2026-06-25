@@ -18,29 +18,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.8
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.5'
 
-      - name: Generate Wrapper JAR
+      - name: Accept Android SDK licenses
         run: |
-          # Create minimal gradle-wrapper.jar (Gradle can generate it)
-          cd ${{ github.workspace }}
-          wget -q https://github.com/gradle/gradle/raw/v8.5.0/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar || true
-          # If that fails, generate from gradle command
-          if [ ! -s gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "Downloading full gradle distribution..."
-            wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip
-            unzip -q gradle-8.5-bin.zip
-            GRADLE_DIR=$(pwd)/gradle-8.5
-            $GRADLE_DIR/bin/gradle wrapper --gradle-version 8.5
-            mv gradle/wrapper/gradle-wrapper.jar ${{ github.workspace }}/gradle/wrapper/gradle-wrapper.jar
-          fi
-          ls -la gradle/wrapper/gradle-wrapper.jar
+          mkdir -p $ANDROID_SDK_ROOT/licenses
+          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> $ANDROID_SDK_ROOT/licenses/android-sdk-license
 
       - name: Build APK
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
