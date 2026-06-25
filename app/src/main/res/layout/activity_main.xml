@@ -1,1 +1,177 @@
-﻿#document
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  视频猎手 (VideoGrab Browser) — Main Activity
+  Optimized for Android 16 / OriginOS 6 / iQOO 10
+  - Edge-to-edge with padding handling via code
+  - Bottom nav with proper insets
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    android:fitsSystemWindows="false">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
+
+        <!-- Toolbar / URL bar -->
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="#FFFFFF"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp"
+            android:elevation="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_back"
+                android:contentDescription="后退" />
+
+            <ImageButton
+                android:id="@+id/btnForward"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_forward"
+                android:contentDescription="前进" />
+
+            <ImageButton
+                android:id="@+id/btnRefresh"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_refresh"
+                android:contentDescription="刷新" />
+
+            <EditText
+                android:id="@+id/urlBar"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/url_bar_bg"
+                android:ellipsize="start"
+                android:gravity="center_vertical"
+                android:imeOptions="actionGo"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:paddingHorizontal="12dp"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnGo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_send"
+                android:contentDescription="前往" />
+        </LinearLayout>
+
+        <!-- Progress bar -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:visibility="gone"
+            app:indicatorColor="#2196F3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:trackColor="#E0E0E0" />
+
+        <!-- Web Browser Tab -->
+        <FrameLayout
+            android:id="@+id/tabWeb"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressBar">
+
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <!-- Downloads Tab -->
+        <FrameLayout
+            android:id="@+id/tabDownloads"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressBar">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/downloadsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/emptyDownloads"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="暂无下载任务\n浏览视频网站后，\n红色浮动按钮会显示发现的视频"
+                android:textAlignment="center"
+                android:textColor="#9E9E9E"
+                android:textSize="16sp"
+                android:visibility="visible" />
+        </FrameLayout>
+
+        <!-- Bottom Navigation -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="#FFFFFF"
+            android:elevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/bottom_nav_menu"
+            app:labelVisibilityMode="labeled" />
+
+        <!-- Floating video detect button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingDetectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:src="@drawable/ic_video_library"
+            android:contentDescription="发现视频"
+            app:backgroundTint="#FF5252"
+            app:fabSize="normal"
+            app:tint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:badgeTextColor="#FFFFFF" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
