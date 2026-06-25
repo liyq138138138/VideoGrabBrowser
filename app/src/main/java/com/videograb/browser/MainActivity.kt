@@ -194,8 +194,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Enable multi-window / split-screen support for OriginOS平行视界
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            webView.setEnableSmartHistory(true)
+        // Note: setEnableSmartHistory requires API 28+ and WebView 117+, wrap to avoid crash
+        try {
+            if (Build.VERSION.SDK_INT >= 28) {
+                WebView::class.java.getMethod("setEnableSmartHistory", Boolean::class.javaPrimitiveType)?.invoke(webView, true)
+            }
+        } catch (_: Exception) {
+            // Method not available in this WebView version
         }
 
         webView.webChromeClient = object : WebChromeClient() {
@@ -340,7 +345,17 @@ class MainActivity : AppCompatActivity() {
         )
 
         floatingDetectButton.isVisible = true
-        floatingDetectButton.text = detectedVideos.size.toString()
+        // Show video count as badge on FAB
+        try {
+            floatingDetectButton.setContentDescription("发现视频: ${detectedVideos.size}")
+        } catch (_: Exception) {}
+        if (Build.VERSION.SDK_INT >= 28) {
+            try {
+                val badge = floatingDetectButton.getOrCreateBadge()
+                badge.number = detectedVideos.size
+                badge.isVisible = true
+            } catch (_: Exception) {}
+        }
 
         Snackbar.make(webView, "发现 ${if (type == VideoType.HLS) "HLS流/ts" else "视频"}",
             Snackbar.LENGTH_SHORT).setAction("下载") { showDetectedVideosDialog() }.show()
