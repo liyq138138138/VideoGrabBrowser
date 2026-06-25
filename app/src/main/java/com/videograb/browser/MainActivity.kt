@@ -1,4 +1,4 @@
-﻿package com.videograb.browser
+package com.videograb.browser
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -47,10 +47,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var floatingDetectButton: com.google.android.material.floatingactionbutton.FloatingActionButton
 
     private lateinit var downloadManager: com.videograb.browser.DownloadManager
+    private lateinit var bookmarkManager: com.videograb.browser.BookmarkManager
     private val videoSniffer by lazy { VideoSniffer { onVideoDetected(it) } }
     private lateinit var downloadsAdapter: DownloadAdapter
 
     private var currentUrl = ""
+    private var currentTitle = ""
     private var detectedVideos = mutableListOf<DetectedVideo>()
 
     companion object {
@@ -65,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         downloadManager = com.videograb.browser.DownloadManager(this)
+        bookmarkManager = com.videograb.browser.BookmarkManager(this)
 
         initViews()
         setupEdgeToEdgeInsets()
@@ -222,6 +225,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 detectedVideos.clear()
                 floatingDetectButton.isVisible = false
+                updateBookmarkIcon()
+            }
+
+            override fun onReceivedTitle(view: WebView?, title: String?) {
+                currentTitle = title ?: ""
+                updateBookmarkIcon()
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -443,7 +452,58 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setupDownloadList() {
+    // =================== 书签功能 ===================
+
+    private fun toggleBookmark() {
+        if (currentUrl.isBlank()) return
+        bookmarkManager.toggle(currentUrl, currentTitle)
+        updateBookmarkIcon()
+        val msg = if (bookmarkManager.isBookmarked(currentUrl)) "已加入书签" else "已取消书签"
+        Snackbar.make(webView, msg, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun updateBookmarkIcon() {
+        try {
+            val btnBookmark = findViewById<android.widget.ImageButton>(R.id.btnBookmark)
+            if (currentUrl.isNotBlank() && bookmarkManager.isBookmarked(currentUrl)) {
+                btnBookmark.setImageResource(R.drawable.ic_bookmark_filled)
+            } else {
+                btnBookmark.setImageResource(R.drawable.ic_bookmark)
+            }
+        } catch (_: Exception) { }
+    }
+
+    private fun showBookmarksDialog() {
+        val bookmarks = bookmarkManager.getAll()
+        if (bookmarks.isEmpty()) {
+            Snackbar.make(webView, "暂无书签", Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        val names = bookmarks.map { it.title.ifBlank { it.url } }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("书签")
+            .setItems(names) { _, which ->
+                loadUrl(bookmarks[which].url)
+            }
+            .setPositiveButton("管理") { _, _ ->
+                val delBookmarks = bookmarkManager.getAll()
+                val delNames = delBookmarks.map { it.title.ifBlank { it.url } }.toTypedArray()
+                AlertDialog.Builder(this)
+                    .setTitle("选择要删除的书签")
+                    .setItems(delNames) { _, which ->
+                        bookmarkManager.remove(delBookmarks[which].url)
+                        updateBookmarkIcon()
+                        Snackbar.make(webView, "已删除书签", Snackbar.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("关闭", null)
+                    .show()
+            }
+            .setNegativeButton("关闭", null)
+            .show()
+    }
+
+    private fun setupDownloadList() { {
         downloadsAdapter = DownloadAdapter(
             onCancel = { task -> downloadManager.cancelTask(task.id) },
             onOpen = { task -> openDownloadedFile(task.outputPath) }
