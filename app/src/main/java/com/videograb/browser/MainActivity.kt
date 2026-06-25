@@ -345,17 +345,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         floatingDetectButton.isVisible = true
-        // Show video count as badge on FAB
-        try {
-            floatingDetectButton.setContentDescription("发现视频: ${detectedVideos.size}")
-        } catch (_: Exception) {}
-        if (Build.VERSION.SDK_INT >= 28) {
-            try {
-                val badge = floatingDetectButton.getOrCreateBadge()
-                badge.number = detectedVideos.size
-                badge.isVisible = true
-            } catch (_: Exception) {}
-        }
+        // Badge is handled via the badge in XML layout; fallback to content description
+        floatingDetectButton.setContentDescription("发现视频: ${detectedVideos.size}")
 
         Snackbar.make(webView, "发现 ${if (type == VideoType.HLS) "HLS流/ts" else "视频"}",
             Snackbar.LENGTH_SHORT).setAction("下载") { showDetectedVideosDialog() }.show()
